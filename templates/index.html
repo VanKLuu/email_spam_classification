@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Spam Classification</title>
+</head>
+<body>
+    <h2>Email Spam Classification</h2>
+    <form action="/predict" method="post">
+        <textarea name="email_text" rows="4" cols="50" placeholder="Enter email text..."></textarea><br><br>
+        <input type="submit" value="Classify">
+    </form>
+    {% if prediction_text %}
+        <h3>{{ prediction_text }}</h3>
+    {% endif %}
+</body>
+</html>
