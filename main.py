@@ -104,7 +104,7 @@ def classify_email(model, email_content):
     # Predict the probability of the email being spam using the MultinomialNB classifier
     predicted_probability = model.predict_proba(email_features)[0][1]
 
-    threshold = 0.5
+    threshold = 0.4
     prediction = "Spam" if predicted_probability > threshold else "Not Spam"
 
     return prediction, predicted_probability
