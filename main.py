@@ -2,9 +2,15 @@ import pandas as pd
 import numpy as np
 from flask import Flask, request, render_template
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+from sklearn.metrics import precision_recall_curve, auc
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv1D, Flatten, Dropout
+from tensorflow.keras.utils import plot_model
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 # Load the CSV file
@@ -41,7 +47,7 @@ model = Sequential([
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 # Train model
-model.fit(X_train, y_train, epochs=10, validation_data=(X_test, y_test))
+history = model.fit(X_train, y_train, epochs=10, validation_data=(X_test, y_test))
 
 # Output the model's performance
 loss, accuracy = model.evaluate(X_test, y_test)
@@ -59,6 +65,54 @@ f1 = f1_score(y_test, y_pred)
 print("Precision:", precision)
 print("Recall:", recall)
 print("F1-score:", f1)
+
+plot_model(model, to_file='cnn_architecture.png', show_shapes=True)
+
+fig = plt.figure(figsize=(15,4))
+
+fig.add_subplot(121)
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.legend(['Training accuracy', 'Validation accuracy'])
+plt.title('Training and validation accuracy')
+plt.xlabel('Epoch Number')
+plt.ylabel('Accuracy')
+
+fig.add_subplot(122)
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.legend(['Training loss', 'Validation loss'])
+plt.title('Training and validation loss')
+plt.xlabel('Epoch Number')
+plt.ylabel('Loss')
+plt.show()
+
+
+# Calculate precision-recall curve
+precision, recall, thresholds = precision_recall_curve(y_test, y_pred)
+
+# Calculate area under curve (AUC)
+auc_score = auc(recall, precision)
+
+# Plot precision-recall curve
+plt.plot(recall, precision, label=f'Precision-Recall Curve (AUC = {auc_score:.2f})')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision-Recall Curve')
+plt.legend()
+plt.show()
+
+# Calculate confusion matrix
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+# Plot confusion matrix
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False)
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.title('Confusion Matrix')
+plt.show()
+
 
 # Define Flask app
 app = Flask(__name__)
