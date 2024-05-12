@@ -66,7 +66,6 @@ print("Precision:", precision)
 print("Recall:", recall)
 print("F1-score:", f1)
 
-plot_model(model, to_file='cnn_architecture.png', show_shapes=True)
 
 fig = plt.figure(figsize=(15,4))
 
